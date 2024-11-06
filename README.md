@@ -1,6 +1,6 @@
 Add Two Numbers as Lists
-Medium
-50
+
+
 Given two natural numbers, a and b, represented as reversed linked lists, compute their sum c as another reversed linked list.
 
 Example 1
