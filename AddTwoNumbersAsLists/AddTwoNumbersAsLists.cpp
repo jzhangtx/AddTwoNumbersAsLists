@@ -76,12 +76,50 @@ int GetNumberFromList(ListNode* pNode)
     return num;
 }
 
+ListNode* AddNode(ListNode* resultNode, ListNode* pFirstNode, ListNode* pSecondNode)
+{
+    if (pFirstNode == nullptr && pSecondNode == nullptr)
+    {
+        if (resultNode->data == 0)
+        {
+            delete resultNode;
+            return nullptr;
+        }
+        return resultNode;
+    }
+
+    ListNode* pNode1 = nullptr;
+    ListNode* pNode2 = nullptr;
+    if (pFirstNode != nullptr)
+    {
+        resultNode->data += pFirstNode->data;
+        pNode1 = pFirstNode->next;
+    }
+    if (pSecondNode != nullptr)
+    {
+        resultNode->data += pSecondNode->data;
+        pNode2 = pSecondNode->next;
+    }
+
+    if (pNode1 == nullptr && pNode2 == nullptr && resultNode->data == 0)
+    {
+        return nullptr;
+    }
+
+    ListNode* pNewNode = new ListNode(resultNode->data / 10);
+    resultNode->data = resultNode->data % 10;
+    resultNode->next = AddNode(pNewNode, pNode1, pNode2);
+    return resultNode;
+}
+
 ListNode* AddTwoNumbers(ListNode* firstList, ListNode* secondList)
 {
-    int first = GetNumberFromList(firstList);
-    int second = GetNumberFromList(secondList);
+    ListNode* pResultHead = new ListNode(0);
+    return AddNode(pResultHead, firstList, secondList);
+    // int first = GetNumberFromList(firstList);
+    // int second = GetNumberFromList(secondList);
 
-    return MakeReversedListWithNumber(first + second);
+    // return MakeReversedListWithNumber(first + second);
 }
 
 int main()
