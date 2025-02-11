@@ -2,6 +2,7 @@
 //
 
 #include <iostream>
+#include <vector>
 
 class ListNode
 {
@@ -39,87 +40,78 @@ void FreeList(ListNode* pNode)
     delete pNode;
 }
 
-ListNode* MakeReversedListWithNumber(int num)
+std::vector<int> GetArrayFromInput(int count, const std::string& prompt)
 {
-    ListNode* pNode = nullptr;
-    ListNode* pCurrentNode = nullptr;
-    while (num != 0)
-    {
-        ListNode* pNewNode = new ListNode(num % 10);
-        if (pNode == nullptr)
-        {
-            pNode = pNewNode;
-            pCurrentNode = pNode;
-        }
-        else
-        {
-            pCurrentNode->next = pNewNode;
-            pCurrentNode = pCurrentNode->next;
-        }
-        num = num / 10;
-    }
+    if (count == 0)
+        return std::vector<int>();
 
-    return pNode;
+    std::cout << prompt;
+    std::vector<int> vec(count, 0);
+    for (int i = 0; i < count; ++i)
+        std::cin >> vec[i];
+
+    return vec;
 }
 
-int GetNumberFromList(ListNode* pNode)
+ListNode* GetListFromArray(const std::vector<int>& vec)
 {
-    int num = 0;
-    int premium = 1;
-    while (pNode != nullptr)
+    if (vec.size() == 0)
+        return nullptr;
+
+    ListNode* pHead = new ListNode(vec[0]);
+    ListNode* pCur = pHead;
+    for (size_t i = 1; i < vec.size(); ++i)
     {
-        num = pNode->data * premium + num;
-        pNode = pNode->next;
-        premium *= 10;
+        pCur->next = new ListNode(vec[i]);
+        pCur = pCur->next;
     }
 
-    return num;
+    return pHead;
 }
 
 ListNode* AddNode(ListNode* resultNode, ListNode* pFirstNode, ListNode* pSecondNode)
 {
     if (pFirstNode == nullptr && pSecondNode == nullptr)
     {
-        if (resultNode->data == 0)
-        {
-            delete resultNode;
-            return nullptr;
-        }
         return resultNode;
     }
 
-    ListNode* pNode1 = nullptr;
-    ListNode* pNode2 = nullptr;
+    int sum = 0;
     if (pFirstNode != nullptr)
     {
-        resultNode->data += pFirstNode->data;
-        pNode1 = pFirstNode->next;
+        sum += pFirstNode->data;
+        pFirstNode = pFirstNode->next;
     }
     if (pSecondNode != nullptr)
     {
-        resultNode->data += pSecondNode->data;
-        pNode2 = pSecondNode->next;
+        sum += pSecondNode->data;
+        pSecondNode = pSecondNode->next;
     }
-
-    if (pNode1 == nullptr && pNode2 == nullptr && resultNode->data == 0)
+    if (resultNode != nullptr)
     {
-        return nullptr;
+        sum += resultNode->data;
     }
 
-    ListNode* pNewNode = new ListNode(resultNode->data / 10);
-    resultNode->data = resultNode->data % 10;
-    resultNode->next = AddNode(pNewNode, pNode1, pNode2);
-    return resultNode;
+    ListNode* pNewNode = new ListNode(sum % 10);
+    if (resultNode != nullptr)
+    {
+        delete resultNode;
+        resultNode = nullptr;
+    }
+
+    if (sum / 10 != 0)
+    {
+        resultNode = new ListNode(sum / 10);
+    }
+
+    pNewNode->next = AddNode(resultNode, pFirstNode, pSecondNode);
+    return pNewNode;
 }
 
 ListNode* AddTwoNumbers(ListNode* firstList, ListNode* secondList)
 {
-    ListNode* pResultHead = new ListNode(0);
-    return AddNode(pResultHead, firstList, secondList);
-    // int first = GetNumberFromList(firstList);
-    // int second = GetNumberFromList(secondList);
-
-    // return MakeReversedListWithNumber(first + second);
+    ListNode* pResult = nullptr;
+    return AddNode(pResult, firstList, secondList);
 }
 
 int main()
@@ -134,8 +126,11 @@ int main()
         if (firstNumber == 0 && secondNumber == 0)
             break;
 
-        ListNode* pFirstHead = MakeReversedListWithNumber(firstNumber);
-        ListNode* pSecondHead = MakeReversedListWithNumber(secondNumber);
+        std::vector<int> vec = GetArrayFromInput(firstNumber, "Please enter the first list: ");
+        ListNode* pFirstHead = GetListFromArray(vec);
+
+        vec = GetArrayFromInput(secondNumber, "Please enter the second list: ");
+        ListNode* pSecondHead = GetListFromArray(vec);
 
         ListNode* pSumHead = AddTwoNumbers(pFirstHead, pSecondHead);
 
